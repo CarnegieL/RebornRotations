@@ -1,13 +1,13 @@
 ﻿namespace DefaultRotations.Magical;
 
-[Rotation("Default", CombatType.PvE, GameVersion = "7.01")]
+[Rotation("CarnegieL_BLM", CombatType.PvE, GameVersion = "7.01")]
 [SourceCode(Path = "main/DefaultRotations/Magical/BLM_Default.cs")]
 [Api(3)]
-public class BLM_Default : BlackMageRotation
+public class CarnegieL_BLM : BlackMageRotation
 {
     #region Config Options
     [RotationConfig(CombatType.PvE, Name = "Use Transpose to Astral Fire before Paradox")]
-    public bool UseTransposeForParadox { get; set; } = true;
+    public bool UseTransposeForParadox { get; set; } = false;
 
     [RotationConfig(CombatType.PvE, Name = "Use Retrace when out of Leylines and standing still (Dangerous and Experimental)")]
     public bool UseRetrace { get; set; } = false;
@@ -267,14 +267,25 @@ public class BLM_Default : BlackMageRotation
                 if (FireIiPvE.CanUse(out act)) return true;
                 if (FirePvE.CanUse(out act)) return true;
                 break;
+            case 3:
+                if (EnochianEndAfterGCD(3))
+                {
+                    if (HasFire)
+                    {
+                        FireIiiPvE.CanUse(out act);
+                        return true;
+                    }
+                    if (FirePvE.CanUse(out act)) return true;
+                }
+                break;
         }
 
-        if (ElementTimeEndAfterGCD(ExtendTimeSafely ? 3u : 2u))
-        {
-            if (CurrentMp >= FirePvE.Info.MPNeed * 2 + 800 && FirePvE.CanUse(out act)) return true;
-            if (FlarePvE.CanUse(out act)) return true;
-            if (DespairPvE.CanUse(out act)) return true;
-        }
+        //if (ElementTimeEndAfterGCD(ExtendTimeSafely ? 3u : 2u))
+        //{
+        //    if (CurrentMp >= FirePvE.Info.MPNeed * 2 + 800 && FirePvE.CanUse(out act)) return true;
+        //    if (FlarePvE.CanUse(out act)) return true;
+        //    if (DespairPvE.CanUse(out act)) return true;
+        //}
 
         return false;
     }
@@ -284,16 +295,16 @@ public class BLM_Default : BlackMageRotation
         act = null;
         if (UsePolyglot(out act)) return true;
 
-        // Add thunder only at combat start.
-        if (CombatElapsedLess(5))
-        {
-            if (AddThunder(out act, 0)) return true;
-        }
+        //// Add thunder only at combat start.
+        //if (CombatElapsedLess(5))
+        //{
+        //    if (AddThunder(out act, 0)) return true;
+        //}
 
         if (TriplecastPvE.CanUse(out act)) return true;
 
-        if (AddThunder(out act, 0) && Player.WillStatusEndGCD(1, 0, true,
-            StatusID.Thundercloud)) return true;
+        if (AddThunder(out act) && Player.WillStatusEndGCD(1, 0, true,
+            StatusID.Thunderhead)) return true;
 
         if (UmbralHearts < 2 && FlarePvE.CanUse(out act)) return true;
         if (FireIiPvE.CanUse(out act)) return true;
